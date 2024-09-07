@@ -17,7 +17,7 @@ impl Worker {
     }
 }
 
-struct Job;
+type Job = Box<dyn FnOnce() + Send + 'static>;
 
 pub struct ThreadPool {
     workers: Vec<Worker>,
@@ -52,6 +52,8 @@ impl ThreadPool {
     where
         F: FnOnce() + Send + 'static,
     {
-      
+        let job = Box::new(f);
+
+        self.sender.send(job).unwrap();
     }
 }
